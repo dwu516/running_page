@@ -194,6 +194,9 @@ class Track:
         for t in gpx.tracks:
             if self.track_name is None:
                 self.track_name = t.name
+            # 从 GPX 文件中读取活动类型
+            if t.type:
+                self.type = t.type.lower()
             for s in t.segments:
                 try:
                     extensions = [
