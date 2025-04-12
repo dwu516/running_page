@@ -234,8 +234,7 @@ const geoJsonForMap = (): FeatureCollection<RPGeometry> => ({
 })
 
 const getActivitySport = (act: Activity): string => {
-  const type = act.type.toLowerCase();
-  if (type === 'run' || type === 'running') {
+  if (act.type === 'Run') {
     if (act.subtype === 'generic') {
       const runDistance = act.distance / 1000;
       if (runDistance > 20 && runDistance < 40) {
@@ -246,19 +245,20 @@ const getActivitySport = (act: Activity): string => {
       return ACTIVITY_TYPES.RUN_GENERIC_TITLE;
     }
     else if (act.subtype === 'trail') return ACTIVITY_TYPES.RUN_TRAIL_TITLE;
-    else if (act.subtype === 'treadmill' || type === 'treadmill_running') return ACTIVITY_TYPES.RUN_TREADMILL_TITLE;
+    else if (act.subtype === 'treadmill') return ACTIVITY_TYPES.RUN_TREADMILL_TITLE;
     else return ACTIVITY_TYPES.RUN_GENERIC_TITLE;
   }
-  else if (type === 'hiking') {
+  else if (act.type === 'hiking') {
     return ACTIVITY_TYPES.HIKING_TITLE;
   }
-  else if (type === 'cycling' || type === 'ride' || type === 'biking') {
+  else if (act.type === 'cycling') {
     return ACTIVITY_TYPES.CYCLING_TITLE;
   }
-  else if (type === 'walking') {
+  else if (act.type === 'walking') {
     return ACTIVITY_TYPES.WALKING_TITLE;
   }
-  else if (type.includes('skiing')) {
+  // if act.type contains 'skiing'
+  else if (act.type.includes('skiing')) {
     return ACTIVITY_TYPES.SKIING_TITLE;
   }
   return "";
@@ -277,30 +277,9 @@ const titleForRun = (run: Activity): string => {
       return `${city} ${activity_sport}`;
     }
   }
-  
-  // 3. use time+type if location is not available
-  const runHour = +run.start_date_local.slice(11, 13);
-  const type = run.type.toLowerCase();
-  
-  // 根据活动类型生成标题
-  if (type === 'cycling' || type === 'ride' || type === 'biking') {
-    if (runHour >= 0 && runHour <= 10) {
-      return '清晨骑行';
-    }
-    if (runHour > 10 && runHour <= 14) {
-      return '午间骑行';
-    }
-    if (runHour > 14 && runHour <= 18) {
-      return '下午骑行';
-    }
-    if (runHour > 18 && runHour <= 21) {
-      return '傍晚骑行';
-    }
-    return '夜间骑行';
-  }
-  
-  // 跑步活动的标题逻辑
+  // 3. use time+length if location or type is not available
   const runDistance = run.distance / 1000;
+  const runHour = +run.start_date_local.slice(11, 13);
   if (runDistance > 20 && runDistance < 40) {
     return RUN_TITLES.HALF_MARATHON_RUN_TITLE;
   }
@@ -320,7 +299,7 @@ const titleForRun = (run: Activity): string => {
     return RUN_TITLES.EVENING_RUN_TITLE;
   }
   return RUN_TITLES.NIGHT_RUN_TITLE;
-}
+};
 
 export interface IViewState {
   longitude?: number;

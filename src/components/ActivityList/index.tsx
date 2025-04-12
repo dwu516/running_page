@@ -79,11 +79,8 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ period, summary, dailyDista
         return `${h}h ${m}m ${s}s`;
     };
 
-    const formatSpeed = (speed: number, type: string): string => {
+    const formatPace = (speed: number): string => {
         if (speed === 0) return '0:00';
-        if (type === 'ride') {
-            return `${speed.toFixed(2)} km/h`;
-        }
         const pace = 60 / speed; // min/km
         const minutes = Math.floor(pace);
         const seconds = Math.round((pace - minutes) * 60);
@@ -99,13 +96,13 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ period, summary, dailyDista
             <h2 className={styles.activityName}>{period}</h2>
             <div className={styles.activityDetails}>
                 <p><strong>{ACTIVITY_TOTAL.TOTAL_DISTANCE_TITLE}:</strong> {summary.totalDistance.toFixed(2)} km</p>
-                <p><strong>{ACTIVITY_TOTAL.AVERAGE_SPEED_TITLE}:</strong> {formatSpeed(summary.averageSpeed, activityType)}</p>
+                <p><strong>{ACTIVITY_TOTAL.AVERAGE_SPEED_TITLE}:</strong> {activityType === 'ride' ? `${summary.averageSpeed.toFixed(2)} km/h` : formatPace(summary.averageSpeed)}</p>
                 <p><strong>{ACTIVITY_TOTAL.TOTAL_TIME_TITLE}:</strong> {formatTime(summary.totalTime)}</p>
                 {interval !== 'day' && (
                     <>
                         <p><strong>{ACTIVITY_TOTAL.ACTIVITY_COUNT_TITLE}:</strong> {summary.count}</p>
                         <p><strong>{ACTIVITY_TOTAL.MAX_DISTANCE_TITLE}:</strong> {summary.maxDistance.toFixed(2)} km</p>
-                        <p><strong>{ACTIVITY_TOTAL.MAX_SPEED_TITLE}:</strong> {formatSpeed(summary.maxSpeed, activityType)}</p>
+                        <p><strong>{ACTIVITY_TOTAL.MAX_SPEED_TITLE}:</strong> {activityType === 'ride' ? `${summary.maxSpeed.toFixed(2)} km/h` : formatPace(summary.maxSpeed)}</p>
                     </>
                 )}
                 {interval === 'day' && (
@@ -148,14 +145,7 @@ const ActivityList: React.FC = () => {
     };
 
     const filterActivities = (activity: Activity): boolean => {
-        const type = activity.type.toLowerCase();
-        if (activityType === 'ride') {
-            return type === 'ride' || type === 'cycling' || type === 'biking';
-        }
-        if (activityType === 'run') {
-            return type === 'run' || type === 'running' || type === 'treadmill_running';
-        }
-        return type === activityType;
+        return activity.type.toLowerCase() === activityType;
     };
 
     const convertTimeToSeconds = (time: string): number => {
