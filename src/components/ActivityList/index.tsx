@@ -148,10 +148,14 @@ const ActivityList: React.FC = () => {
     };
 
     const filterActivities = (activity: Activity): boolean => {
+        const type = activity.type.toLowerCase();
         if (activityType === 'ride') {
-            return activity.type.toLowerCase() === 'ride' || activity.type.toLowerCase() === 'cycling';
+            return type === 'ride' || type === 'cycling' || type === 'biking';
         }
-        return activity.type.toLowerCase() === activityType;
+        if (activityType === 'run') {
+            return type === 'run' || type === 'running' || type === 'treadmill_running';
+        }
+        return type === activityType;
     };
 
     const convertTimeToSeconds = (time: string): number => {
